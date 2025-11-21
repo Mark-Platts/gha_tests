@@ -1,0 +1,40 @@
+name: Aggregate apps and deploy to gh-pages (Test)
+
+on: workflow_dispatch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      # If you want to run a manual full rebuild (via workflow_dispatch), list apps here:
+      APPS: |
+        Mark-Platts/4-bit-CPU-JS-own-arch
+        Mark-Platts/3D-4D-Render-Engine
+
+    steps:
+      - name: Checkout portfolio repo (readonly)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Prepare build folder (clean workspace)
+        run: |
+          rm -rf build
+          mkdir build
+
+      - name: Copy portfolio root into build/ (preserve root structure)
+        run: |
+          rsync -av --exclude='.git' --exclude='.github' --exclude='build' --exclude='temp' ./ build/
+
+      - name: Print APPs into file in build/
+        run: |
+          echo "$APPs" > build/apps.txt 
+
+      - name: Deploy build/ to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+          publish_branch: gh-pages
+  
