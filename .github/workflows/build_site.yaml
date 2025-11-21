@@ -1,4 +1,4 @@
-name: Update cpusim in portfolio
+name: Build Site files from repos
 
 on: workflow_dispatch
 
