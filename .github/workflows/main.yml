@@ -1,4 +1,4 @@
-name: Aggregate apps and deploy to gh-pages (Test)
+name: Update cpusim in portfolio
 
 on: workflow_dispatch
 
@@ -6,34 +6,49 @@ permissions:
   contents: write
 
 jobs:
-  build-and-deploy:
+  update-app:
     runs-on: ubuntu-latest
 
-    env:
-      # If you want to run a manual full rebuild (via workflow_dispatch), list apps here:
-      APPS: |
-        Mark-Platts/4-bit-CPU-JS-own-arch
-        Mark-Platts/3D-4D-Render-Engine
-
     steps:
-      - name: Checkout portfolio repo (readonly)
+      # 1. Checkout the portfolio repository
+      - name: Checkout portfolio
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Prepare build folder (clean workspace)
+      # 2. Prepare working directories
+      - name: Create temp and build folders
         run: |
-          rm -rf build
-          mkdir build
+          mkdir temp
+          mkdir build/apps/4bt_cpu_sim
 
-      - name: Copy portfolio root into build/ (preserve root structure)
+      # 3. Checkout 4bt_cpu_sim repo into temp
+      - name: Checkout 4bt_cpu_sim repo
+        uses: actions/checkout@v4
+        with:
+          repository: Mark-Platts/4-bit-CPU-JS-own-arch
+          path: temp/4bt_cpu_sim
+          fetch-depth: 1
+
+      # 4. Copy portfolio root files → build/ (excluding unwanted folders)
+      - name: Copy portfolio files into build
         run: |
-          rsync -av --exclude='.git' --exclude='.github' --exclude='build' --exclude='temp' ./ build/
+          rsync -av \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='build' \
+            --exclude='temp' \
+            ./ build/
 
-      - name: Print APPs into file in build/
+      # 5. Copy cpusim files into build/apps/cpusim
+      - name: Copy cpusim into apps folder
         run: |
-          echo "$APPS" > build/apps.txt 
+          rsync -av \
+            --exclude='.git' \
+            --exclude='.github' \
+            temp/4bt_cpu_sim/ build/apps/4bt_cpu_sim/
 
+      # 6. Deploy build/ folder to the deploy branch
       - name: Deploy build/ to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
