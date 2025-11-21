@@ -20,7 +20,8 @@ jobs:
       - name: Create temp and build folders
         run: |
           mkdir temp
-          mkdir build
+          mkdir -p build/apps/4bt_cpu_sim/
+          mkdir -p build/apps/3d_4d_shape_render/
 
       # 4. Checkout 4bt_cpu_sim repo into temp
       - name: Checkout 4bt_cpu_sim repo
