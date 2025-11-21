@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the portfolio repository
+      # 1. Checkout the portfolio repository (main)
       - name: Checkout portfolio
         uses: actions/checkout@v4
         with:
@@ -22,7 +22,15 @@ jobs:
           mkdir temp
           mkdir -p build/apps/4bt_cpu_sim
 
-      # 3. Checkout 4bt_cpu_sim repo into temp
+      # 3. Checkout the portfolio repository (gh-pages) into temp
+      - name: Checkout portfolio
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: temp/gh_pages
+          fetch-depth: 1
+
+      # 4. Checkout 4bt_cpu_sim repo into temp
       - name: Checkout 4bt_cpu_sim repo
         uses: actions/checkout@v4
         with:
@@ -30,7 +38,7 @@ jobs:
           path: temp/4bt_cpu_sim
           fetch-depth: 1
 
-      # 4. Copy portfolio root files → build/ (excluding unwanted folders)
+      # 5. Copy portfolio root files → build/ (excluding unwanted folders)
       - name: Copy portfolio files into build
         run: |
           rsync -av \
@@ -40,15 +48,24 @@ jobs:
             --exclude='temp' \
             ./ build/
 
-      # 5. Copy cpusim files into build/apps/cpusim
-      - name: Copy cpusim into apps folder
+      # 6. Copy previosu app files into build/apps and delete cpusim
+      - name: Copy previous app folder to build and delete cpusim
+        run: |
+          rsync -av \
+            --exclude='.git' \
+            --exclude='.github' \
+            temp/gh_pages/apps build/apps/
+          rm -rf build/apps/4bt_cpu_sim/
+
+      # 7. Copy current cpusim files into build/apps/cpusim
+      - name: Copy current cpusim into apps folder
         run: |
           rsync -av \
             --exclude='.git' \
             --exclude='.github' \
             temp/4bt_cpu_sim/ build/apps/4bt_cpu_sim/
 
-      # 6. Deploy build/ folder to the deploy branch
+      # 8. Deploy build/ folder to the deploy branch
       - name: Deploy build/ to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
