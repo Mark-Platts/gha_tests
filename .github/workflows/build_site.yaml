@@ -23,7 +23,7 @@ jobs:
           mkdir -p build/apps/4bt_cpu_sim/
           mkdir -p build/apps/3d_4d_shape_render/
 
-      # 4. Checkout 4bt_cpu_sim repo into temp
+      # 3. Checkout 4bt_cpu_sim repo into temp
       - name: Checkout 4bt_cpu_sim repo
         uses: actions/checkout@v4
         with:
@@ -31,7 +31,7 @@ jobs:
           path: temp/4bt_cpu_sim
           fetch-depth: 1
 
-      # 3. Checkout 3d_4d_shape_render repo into temp
+      # 4. Checkout 3d_4d_shape_render repo into temp
       - name: Checkout 3d_4d_shape_render repo
         uses: actions/checkout@v4
         with:
@@ -39,7 +39,7 @@ jobs:
           path: temp/3d_4d_shape_render
           fetch-depth: 1
 
-      # 5. Copy portfolio root files → build/ (excluding unwanted folders)
+      # 5. Copy portfolio root files → build/ (excluding unwanted files)
       - name: Copy portfolio files into build
         run: |
           rsync -av \
@@ -49,7 +49,7 @@ jobs:
             --exclude='temp' \
             ./ build/
 
-      # 7. Copy current cpusim files into build/apps/cpusim
+      # 6. Copy current app files into build/apps/
       - name: Copy current apps into apps folder
         run: |
           rsync -av \
@@ -62,7 +62,7 @@ jobs:
             temp/3d_4d_shape_render/ build/apps/3d_4d_shape_render/
             
 
-      # 8. Deploy build/ folder to the deploy branch
+      # 7. Deploy build/ folder to the deploy branch
       - name: Deploy build/ to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
