@@ -1,6 +1,11 @@
 name: Build Full Site files from Portfolio and App repos
 
-on: workflow_dispatch
+on: 
+  repository_dispatch:
+    types: [trigger-site-build]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: write
