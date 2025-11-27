@@ -12,7 +12,7 @@ jobs:
     env:
       APPS: |
         Mark-Platts/4-bit-CPU-JS-own-arch
-        Mark-Platts/3D-4D-Render-Engine-WRONG
+        Mark-Platts/3D-4D-Render-Engine
         Mark-Platts/FPS-Render-Experiments
         Mark-Platts/Tic-Tac-Toe-Minimal
         
